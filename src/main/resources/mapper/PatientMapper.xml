@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neighborsystem.mapper.PatientMapper">
+	<resultMap type="Patient" id="BaseResultMap">
+		<id property="patientId" column="patient_id" javaType="java.lang.Integer" />
+		<result property="patientName" column="patient_name" javaType="java.lang.String" />
+		<result property="patientSex" column="patient_sex" javaType="java.lang.String" />
+		<result property="patientPhone" column="patient_phone" javaType="java.lang.String" />
+		<result property="patientState" column="patient_state" javaType="java.lang.Integer" />
+		<result property="oneStatus" column="one_status" javaType="java.lang.String" />
+		<result property="twoStatus" column="two_status" javaType="java.lang.String" />
+		<result property="patientContent" column="patient_Content" javaType="java.lang.String" />
+	</resultMap>
+	<select id="findAllPatient" resultMap="BaseResultMap">
+		select * from patient
+	</select>
+
+	<select id="findPatientById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+		select * from patient where patient_id=#{id}
+	</select>
+
+
+	<insert id="addPatient" parameterType="patient">
+		insert into patient(patient_name,patient_sex,patient_phone,patient_state,one_status,two_status,patient_Content)
+		values(#{patientName},#{patientSex},#{patientPhone},#{patientState},#{oneStatus},#{twoStatus},#{patientContent})
+	</insert>
+
+
+	<select id="findPatientLikeName" parameterType="java.lang.String" resultMap="BaseResultMap">
+		select * from patient where patient_Name like '%${value}%'
+	</select>
+
+	<update id="updatePatient" parameterType="patient">
+		update patient set patient_State=#{patientState},one_status=#{oneStatus},two_status=#{twoStatus} where patient_id=#{patientId}
+	</update>
+	
+	
+	<delete id="deletePatient" parameterType="java.lang.Integer">
+		delete from patient where patient_id=#{patientID}
+	</delete>
+	
+	
+	<select id="findTotalPatient" resultType="java.lang.Integer">
+		select count(*) from patient
+	</select>
+	
+	
+</mapper>

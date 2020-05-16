@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx" 
+	xmlns:mvc="http://www.springframework.org/schema/mvc" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+		
+	<context:annotation-config></context:annotation-config>
+	<!--开启注解扫描
+	 告知spring在创建容器时要扫描的包，配置所需要的标签不是在bean中
+	 而是一个名称为context名称空间和约束中
+		注解@ComponentScan
+			作用:通过注解指定spring在创建容器时要扫描的包
+
+	-->
+	<context:component-scan base-package="com.neighborsystem.mapper,com.neighborsystem.service.impl"></context:component-scan>
+	<!--数据源-->
+	<bean id="dataSource"
+		class="com.alibaba.druid.pool.DruidDataSource" >
+		<property name="url" value="jdbc:mysql://localhost:3306/market"></property>
+		<property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+		<property name="username" value="root"></property>
+		<property name="password" value="root"></property>
+	</bean>
+	<bean id="sessionFactory"
+		class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="configLocation" value="classpath:SqlMapConfig.xml"></property>
+		<property name="mapperLocations">
+			<array>
+				<value>classpath*:mapper/*.xml</value>
+			</array>
+		</property>
+		<property name="plugins">
+			<array>
+				<bean id="pageHelper" class="com.github.pagehelper.PageHelper">
+					<property name="properties">
+						<value>
+							dialect=mysql
+							reasonable=true
+						</value>
+					</property>
+				</bean>
+			</array>
+		</property> 
+	</bean>
+	<!--配置dao映射关系-->
+	<bean id="mapperConfig" class="org.mybatis.spring.mapper.MapperScannerConfigurer"> 
+		<property name="basePackage" value="com.neighborsystem.mapper"></property>
+	</bean>
+
+	<!--set方法注入
+		涉及的标签: property
+		出现的位置:bean标签的内部
+		标签的属性:
+			name:用于指定注入时所调用的set方法名称
+			value：用于提供基本类型和String类型数据
+			ref:用于指定其它bean类型数据  springioc容器中提供的对象
+		优势:创建对象时没有明确的限制，可以直接使用默认构造函数
+		弊端:如果某个成员必须有值，则获取的对象有可能set方法没有执行
+
+
+	-->
+	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+
+		<property name="maxTotal" value="30" />
+
+		<property name="maxIdle" value="10" />
+
+		<property name="numTestsPerEvictionRun" value="1024" />
+
+		<property name="timeBetweenEvictionRunsMillis" value="30000" />
+
+		<property name="minEvictableIdleTimeMillis" value="1800000" />
+
+		<property name="softMinEvictableIdleTimeMillis" value="10000" />
+
+		<property name="maxWaitMillis" value="1500" />
+
+		<property name="testOnBorrow" value="true" />
+
+		<property name="testWhileIdle" value="true" />
+
+		<property name="blockWhenExhausted" value="false" />
+	</bean>
+	<!--构造函数注入
+	优势:在获取bean对象时，注入数据是必须操作，否则无法实现
+	弊端:改变了bean对象的实例化方式，是我们在创建对象时，如果用不到这些数据，也必须提供
+
+	-->
+	<bean id="jedisPool" class="redis.clients.jedis.JedisPool" destroy-method="close">
+		<constructor-arg name="poolConfig" ref="jedisPoolConfig" />
+		<constructor-arg name="host" value="127.0.0.1" />
+		<constructor-arg name="port" value="6379" />
+	</bean>
+
+	<!--spring中基于XML的声明式AOP配置步骤
+		1.配置事务管理器
+		2.配置事务的通知
+			此时我们需要导入事务的约束 tx名称空间和约束，同时也需要aop
+			使用tx:advice配置事务通知
+			属性:
+				id:给事务通知起一个标志
+				transactionManager :给事务通知引用管理器bean
+		3.配置aop中的通用切入点表达式
+
+		4.建立事务通知和切入点表达式的方式
+
+		5.配置事务的属性
+			是在事务通知 tx:advice标签的内部
+	-->
+	<!--事务管理器-->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+
+
+
+
+	<!--
+
+
+	-->
+</beans>

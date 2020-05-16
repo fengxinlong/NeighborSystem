@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<settings>
+       <!--  打印查询语句 -->
+        <setting name="logImpl" value="STDOUT_LOGGING" />
+
+
+    </settings>
+
+	<!--不区分大小写-->
+	<typeAliases>
+		<package name="com.neighborsystem.entity" />
+	</typeAliases>
+
+	<!--mappers里的<package>标签 指定dao接口的 ，指定之后就不必再写 mapper 以及resource class-->
+
+	<!--开启mybatis延迟加载-->
+
+</configuration>
